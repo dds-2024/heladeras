@@ -1,9 +1,6 @@
 package ar.edu.utn.dds.k3003.repositories;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -13,10 +10,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 
 import ar.edu.utn.dds.k3003.model.Operacion;
-import ar.edu.utn.dds.k3003.model.Temperatura;
-import ar.edu.utn.dds.k3003.util.HibernateUtil;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class OperacionRepository {
     private EntityManagerFactory _emf;

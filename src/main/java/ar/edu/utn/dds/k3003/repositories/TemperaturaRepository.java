@@ -1,9 +1,6 @@
 package ar.edu.utn.dds.k3003.repositories;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -14,11 +11,6 @@ import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import ar.edu.utn.dds.k3003.util.HibernateUtil;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-
-import ar.edu.utn.dds.k3003.model.Heladera;
 import ar.edu.utn.dds.k3003.model.Temperatura;
 import java.util.NoSuchElementException;
 

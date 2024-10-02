@@ -4,7 +4,6 @@ import java.util.NoSuchElementException;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.dtos.DepositoDTO;
-import ar.edu.utn.dds.k3003.facades.dtos.TemperaturaDTO;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
