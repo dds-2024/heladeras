@@ -23,13 +23,15 @@ public class RetiroController {
         var retiroDTO = context.bodyAsClass(RetiroDTO.class);
         
         try {
+            
             this.fachada.retirar(retiroDTO);
-            //Si no tiro ex devuelvo OK
-            context.status(HttpStatus.OK);
             // Incrementar el contador de aperturas de heladeras
             aperturasHeladeras.increment();
             // Incrementar el contador de retiros realizados
             retirosRealizados.increment();
+            //Si no tiro ex devuelvo OK
+            context.status(HttpStatus.OK);
+            
         } catch (NoSuchElementException ex) {
             context.result(ex.getLocalizedMessage());
             context.status(HttpStatus.NOT_FOUND);
