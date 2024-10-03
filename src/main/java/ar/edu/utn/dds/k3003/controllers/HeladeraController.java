@@ -1,6 +1,8 @@
 package ar.edu.utn.dds.k3003.controllers;
 
 import java.util.NoSuchElementException;
+import io.prometheus.client.Counter;
+import io.prometheus.client.Gauge;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
@@ -9,7 +11,7 @@ import io.javalin.http.HttpStatus;
 
 public class HeladeraController {
     private final Fachada fachada;
-    
+
     public HeladeraController(Fachada fachada) {
         this.fachada = fachada;
     }

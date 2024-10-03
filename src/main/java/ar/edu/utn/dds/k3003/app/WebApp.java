@@ -1,50 +1,66 @@
 package ar.edu.utn.dds.k3003.app;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Locale;
+import io.javalin.Javalin;
+import io.javalin.micrometer.MicrometerPlugin;
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
+import io.micrometer.prometheusmetrics.PrometheusConfig;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 
 import ar.edu.utn.dds.k3003.clients.ViandasProxy;
-import ar.edu.utn.dds.k3003.controllers.CleanupController;
-import ar.edu.utn.dds.k3003.controllers.DepositoController;
-import ar.edu.utn.dds.k3003.controllers.HeladeraController;
-import ar.edu.utn.dds.k3003.controllers.RetiroController;
-import ar.edu.utn.dds.k3003.controllers.TemperaturaController;
-import ar.edu.utn.dds.k3003.facades.dtos.Constants;
-import ar.edu.utn.dds.k3003.model.CustomLocalDateTimeDeserializer;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-
-import io.javalin.Javalin;
-import io.javalin.json.JavalinJackson;
-
-import java.util.TimeZone;
+import ar.edu.utn.dds.k3003.controllers.*;
 
 public class WebApp {
-    public static void main(String[] args) {
+    private static final String TOKEN = "your_token_here"; // Cambia esto por un token seguro
 
+    public static void main(String[] args) {
         var env = System.getenv();
-        var objectMapper = createObjectMapper();
+        //var objectMapper = createObjectMapper();
         var fachada = new Fachada();
-        fachada.setViandasProxy(new ViandasProxy(objectMapper));
+        //fachada.setViandasProxy(new ViandasProxy(objectMapper));
+        fachada.setViandasProxy(new ViandasProxy());
 
         var port = Integer.parseInt(env.getOrDefault("PORT", "8080"));
 
-        //var app = Javalin.create().start(port);
+        // Crear el registro de métricas de Prometheus
+        final var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+        registry.config().commonTags("app", "heladera-app");
+
+        // Agregar métricas de JVM y sistema
+        try (var jvmGcMetrics = new JvmGcMetrics();
+             var jvmHeapPressureMetrics = new JvmHeapPressureMetrics()) {
+            jvmGcMetrics.bindTo(registry);
+            jvmHeapPressureMetrics.bindTo(registry);
+        }
+        new JvmMemoryMetrics().bindTo(registry);
+        new ProcessorMetrics().bindTo(registry);
+        new FileDescriptorMetrics().bindTo(registry);
+
+        // Agregar métricas personalizadas
+        var heladeraAperturas = registry.counter("heladera_aperturas_total");
+        var depositosRealizados = registry.counter("depositos_realizados_total");
+        var retirosRealizados = registry.counter("retiros_realizados_total");
+
+        final var micrometerPlugin = new MicrometerPlugin(config -> config.registry = registry);
+        //JavalinJackson.configure(objectMapper);
+
+        // Configurar Javalin con Micrometer
         var app = Javalin.create(config -> {
-            config.jsonMapper(new JavalinJackson(objectMapper));
+            // config.jsonMapper(new CustomJsonMapper(objectMapper));
+            config.registerPlugin(micrometerPlugin);
         }).start(port);
 
+        // Configurar controladores
         var heladerasController = new HeladeraController(fachada);
-        var depositosController = new DepositoController(fachada);
-        var retirosController = new RetiroController(fachada);
+        var depositosController = new DepositoController(fachada, heladeraAperturas, depositosRealizados);
+        var retirosController = new RetiroController(fachada, heladeraAperturas, retirosRealizados);
         var temperaturasController = new TemperaturaController(fachada);
         var cleanupController = new CleanupController();
-
+        
+        // Definir rutas
         app.post("/heladeras", heladerasController::agregar);
         app.get("/heladeras/{id}", heladerasController::obtener);
         app.post("/depositos", depositosController::depositar);
@@ -53,22 +69,28 @@ public class WebApp {
         app.get("/heladeras/{id}/temperaturas", heladerasController::obtenerTemperaturas);
         app.get("/heladeras/{id}/viandas", heladerasController::obtenerCantidadViandas);
         app.delete("/cleanup", cleanupController::cleanup);
+
+        // Endpoint para métricas
+        app.get("/metrics", ctx -> {
+            var auth = ctx.header("Authorization");
+            if (auth != null && auth.equals("Bearer " + TOKEN)) {
+                ctx.contentType("text/plain; version=0.0.4")
+                   .result(registry.scrape());
+            } else {
+                ctx.status(401).json("Acceso no autorizado");
+            }
+        });
     }
 
-    public static ObjectMapper createObjectMapper() {
-        var objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    // public static ObjectMapper createObjectMapper() {
+    //     var objectMapper = new ObjectMapper();
+    //     objectMapper.registerModule(new JavaTimeModule());
+    //     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(LocalDateTime.class, new CustomLocalDateTimeDeserializer());
-        objectMapper.registerModule(module);
+    //     var sdf = new SimpleDateFormat(Constants.DEFAULT_SERIALIZATION_FORMAT, Locale.getDefault());
+    //     sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    //     objectMapper.setDateFormat(sdf);
 
-        var sdf = new SimpleDateFormat(Constants.DEFAULT_SERIALIZATION_FORMAT, Locale.getDefault());
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        objectMapper.setDateFormat(sdf);
-
-        return objectMapper;
-    }
+    //     return objectMapper;
+    // }
 }

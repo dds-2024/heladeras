@@ -13,7 +13,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Dependencies versions -->
-    <javalin.version>5.6.5</javalin.version>
+    <javalin.version>6.1.3</javalin.version>
     <junit.version>5.10.2</junit.version>
     <mockito.version>5.11.0</mockito.version>
     <retrofit.version>2.11.0</retrofit.version>
@@ -25,6 +25,14 @@
 
   <build>
     <plugins>
+     <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <mainClass>ar.edu.utn.dds.k3003.Main</mainClass>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -61,6 +69,16 @@
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
+      <version>2.16.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.16.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
       <version>2.16.0</version>
     </dependency>
     <!-- Tools -->
@@ -119,11 +137,7 @@
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>2.15.2</version>
-    </dependency>
+    
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
@@ -135,6 +149,39 @@
       <artifactId>javax.persistence-api</artifactId>
       <version>${javax.persistence.version}</version>
     </dependency>
+    <dependency>
+        <groupId>io.prometheus</groupId>
+        <artifactId>simpleclient</artifactId>
+        <version>0.16.0</version>
+    </dependency>
+    <dependency>
+        <groupId>io.prometheus</groupId>
+        <artifactId>simpleclient_hotspot</artifactId>
+        <version>0.16.0</version>
+    </dependency>
+    <dependency>
+        <groupId>io.prometheus</groupId>
+        <artifactId>simpleclient_httpserver</artifactId>
+        <version>0.16.0</version>
+    </dependency>
+    <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-core</artifactId>
+        <version>1.13.0</version>
+    </dependency>
+    <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-registry-prometheus</artifactId>
+        <version>1.13.0</version>
+    </dependency>
+    <dependency>
+        <groupId>io.javalin</groupId>
+        <artifactId>javalin-micrometer</artifactId>
+        <version>${javalin.version}</version>
+    </dependency>
+
+    
+
   </dependencies>
 
   <repositories>

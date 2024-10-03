@@ -1,17 +1,22 @@
 package ar.edu.utn.dds.k3003.controllers;
 
 import java.util.NoSuchElementException;
+import io.javalin.http.Context;
+import io.javalin.http.HttpStatus;
+import io.micrometer.core.instrument.Counter;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
-import io.javalin.http.Context;
-import io.javalin.http.HttpStatus;
 
 public class RetiroController {
     private final Fachada fachada;
+    private final Counter aperturasHeladeras;
+    private final Counter retirosRealizados;
 
-    public RetiroController(Fachada fachada) {
+    public RetiroController(Fachada fachada, Counter aperturasHeladeras, Counter retirosRealizados) {
         this.fachada = fachada;
+        this.aperturasHeladeras = aperturasHeladeras;
+        this.retirosRealizados = retirosRealizados;
     }
 
     public void retirar(Context context) {
@@ -21,6 +26,10 @@ public class RetiroController {
             this.fachada.retirar(retiroDTO);
             //Si no tiro ex devuelvo OK
             context.status(HttpStatus.OK);
+            // Incrementar el contador de aperturas de heladeras
+            aperturasHeladeras.increment();
+            // Incrementar el contador de retiros realizados
+            retirosRealizados.increment();
         } catch (NoSuchElementException ex) {
             context.result(ex.getLocalizedMessage());
             context.status(HttpStatus.NOT_FOUND);
