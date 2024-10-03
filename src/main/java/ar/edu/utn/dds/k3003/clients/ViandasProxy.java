@@ -17,17 +17,17 @@ public class ViandasProxy implements FachadaViandas {
   private final String endpoint;
   private final ViandasRetrofitClient service;
 
-  // public ViandasProxy(ObjectMapper objectMapper) {
-  public ViandasProxy() {
+  public ViandasProxy(ObjectMapper objectMapper) {
+  
 
     var env = System.getenv();
-    this.endpoint = env.getOrDefault("URL_VIANDAS", "http://localhost:8081");
+    this.endpoint = env.getOrDefault("URL_VIANDAS", "https://two024-dds-tp-viandas.onrender.com");
 
     
     var retrofit =
         new Retrofit.Builder()
             .baseUrl(this.endpoint)
-            //.addConverterFactory(JacksonConverterFactory.create(objectMapper))
+            .addConverterFactory(JacksonConverterFactory.create(objectMapper))
             .build();
 
     this.service = retrofit.create(ViandasRetrofitClient.class);

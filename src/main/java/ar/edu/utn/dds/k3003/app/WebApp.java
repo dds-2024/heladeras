@@ -9,19 +9,27 @@ import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.prometheusmetrics.PrometheusConfig;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import java.util.Locale;
+import java.util.TimeZone;
+import java.text.SimpleDateFormat;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ar.edu.utn.dds.k3003.clients.ViandasProxy;
 import ar.edu.utn.dds.k3003.controllers.*;
+import ar.edu.utn.dds.k3003.facades.dtos.Constants;
 
 public class WebApp {
     private static final String TOKEN = "your_token_here"; // Cambia esto por un token seguro
 
     public static void main(String[] args) {
         var env = System.getenv();
-        //var objectMapper = createObjectMapper();
+        var objectMapper = createObjectMapper();
         var fachada = new Fachada();
-        //fachada.setViandasProxy(new ViandasProxy(objectMapper));
-        fachada.setViandasProxy(new ViandasProxy());
+        fachada.setViandasProxy(new ViandasProxy(objectMapper));
+        
 
         var port = Integer.parseInt(env.getOrDefault("PORT", "8080"));
 
@@ -82,15 +90,15 @@ public class WebApp {
         });
     }
 
-    // public static ObjectMapper createObjectMapper() {
-    //     var objectMapper = new ObjectMapper();
-    //     objectMapper.registerModule(new JavaTimeModule());
-    //     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    public static ObjectMapper createObjectMapper() {
+        var objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-    //     var sdf = new SimpleDateFormat(Constants.DEFAULT_SERIALIZATION_FORMAT, Locale.getDefault());
-    //     sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-    //     objectMapper.setDateFormat(sdf);
+        var sdf = new SimpleDateFormat(Constants.DEFAULT_SERIALIZATION_FORMAT, Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        objectMapper.setDateFormat(sdf);
 
-    //     return objectMapper;
-    // }
+        return objectMapper;
+    }
 }
