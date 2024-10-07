@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.clients;
 
+import ar.edu.utn.dds.k3003.dtos.EstadoViandaRequest;
 import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
@@ -39,10 +40,20 @@ public class ViandasProxy implements FachadaViandas {
     return null;
   }
 
+  @SneakyThrows
   @Override
-  public ViandaDTO modificarEstado(String s, EstadoViandaEnum estadoViandaEnum)
+  public ViandaDTO modificarEstado(String qr, EstadoViandaEnum estadoViandaEnum)
       throws NoSuchElementException {
-    return null;
+    EstadoViandaRequest estadoViandaRequest = new EstadoViandaRequest(estadoViandaEnum);
+    Response<ViandaDTO> response = service.updateState(qr, estadoViandaRequest).execute();
+
+    if (response.isSuccessful()) {
+      return response.body();
+    }
+    if (response.code() == HttpStatus.NOT_FOUND.getCode()) {
+      throw new NoSuchElementException("No se encontró la vianda con QR: " + qr);
+    }
+    throw new RuntimeException("Error al conectarse con el componente viandas");
   }
 
   @Override

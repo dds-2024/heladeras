@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.clients;
 
+import ar.edu.utn.dds.k3003.dtos.EstadoViandaRequest;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import retrofit2.Call;
@@ -68,5 +69,11 @@ public class MockViandasRetrofitClient implements ViandasRetrofitClient {
                 return Timeout.NONE;
             }
         };
+    }
+
+    @Override
+    public Call<ViandaDTO> updateState(String qr, EstadoViandaRequest estadoViandaRequest) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateState'");
     }
 }
