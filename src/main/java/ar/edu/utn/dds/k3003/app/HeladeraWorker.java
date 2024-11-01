@@ -64,7 +64,7 @@ public class HeladeraWorker extends DefaultConsumer {
         factory.setHost(env.getOrDefault("QUEUE_HOST", "toad.rmq.cloudamqp.com"));
         factory.setUsername(env.getOrDefault("QUEUE_USERNAME", "gzpxkmid"));
         factory.setPassword(env.getOrDefault("QUEUE_PASSWORD", "QffxXn5gFxbVNGXK8LLu-mPOJmvjgC4x"));
-        // En el plan más barato, el VHOST == USER
+        
         factory.setVirtualHost(env.getOrDefault("QUEUE_USERNAME", "gzpxkmid"));
         String queueName = env.getOrDefault("QUEUE_NAME", "heladeras");
         Connection connection = factory.newConnection();

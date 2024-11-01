@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import ar.edu.utn.dds.k3003.dtos.SuscripcionDTO;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
@@ -12,12 +13,15 @@ import ar.edu.utn.dds.k3003.facades.dtos.TemperaturaDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import ar.edu.utn.dds.k3003.model.Heladera;
 import ar.edu.utn.dds.k3003.model.Operacion;
+import ar.edu.utn.dds.k3003.model.Suscripcion;
 import ar.edu.utn.dds.k3003.model.Temperatura;
 import ar.edu.utn.dds.k3003.repositories.HeladeraMapper;
 import ar.edu.utn.dds.k3003.repositories.HeladeraRepository;
 import ar.edu.utn.dds.k3003.repositories.OperacionRepository;
+import ar.edu.utn.dds.k3003.repositories.SuscripcionRepository;
 import ar.edu.utn.dds.k3003.repositories.TemperaturaMapper;
 import ar.edu.utn.dds.k3003.repositories.TemperaturaRepository;
+import ar.edu.utn.dds.k3003.services.NotificacionService;
 
 public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
     private final HeladeraRepository heladeraRepository;
@@ -25,7 +29,9 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
     private final TemperaturaRepository temperaturaRepository;
     private final TemperaturaMapper temperaturaMapper;
     private final OperacionRepository operacionRepository;
-
+    private final SuscripcionRepository suscripcionRepository;
+    private final NotificacionService notificacionService;
+    
     private FachadaViandas fachadaViandas;
 
     public Fachada() {
@@ -34,6 +40,8 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
         this.temperaturaRepository = new TemperaturaRepository();
         this.temperaturaMapper = new TemperaturaMapper();
         this.operacionRepository = new OperacionRepository();
+        this.suscripcionRepository = new SuscripcionRepository();
+        this.notificacionService = new NotificacionService();
     }
 
     @Override
@@ -61,6 +69,9 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
         
         //Modifico estado vianda a depositada
         this.fachadaViandas.modificarEstado(viandaDTO.getCodigoQR(), EstadoViandaEnum.DEPOSITADA);
+
+        //Verifico si hay notificaciones para la heladera
+        this.notificacionService.verificarNotificaciones(heladera);
     }
 
     @Override
@@ -80,6 +91,9 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
 
         //Modifico estado vianda a retirada
         this.fachadaViandas.modificarEstado(viandaDTO.getCodigoQR(), EstadoViandaEnum.RETIRADA);
+
+        //Verifico si hay notificaciones para la heladera
+        this.notificacionService.verificarNotificaciones(heladera);
     }
 
     @Override
@@ -125,5 +139,34 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
 
         //Devuelvo la heladera encontrada como HeladeraDTO
         return heladeraMapper.map(heladera);
+    }
+
+    public SuscripcionDTO suscribir(SuscripcionDTO suscripcionDTO) {
+        // Verificar que la heladera existe
+        // HeladeraDTO heladeraDTO = buscarHeladeraXId(suscripcionDTO.getHeladeraId())
+        //     .orElseThrow(() -> new NoSuchElementException("Heladera no encontrada"));
+
+        // Crear y guardar la suscripción
+        Suscripcion suscripcion = new Suscripcion();
+        suscripcion.setHeladeraId(suscripcionDTO.getHeladeraId());
+        suscripcion.setColaboradorId(suscripcionDTO.getColaboradorId());
+        suscripcion.setUmbralViandasMinimas(suscripcionDTO.getUmbralViandasMinimas());
+        suscripcion.setUmbralViandasMaximas(suscripcionDTO.getUmbralViandasMaximas());
+        suscripcion.setNotificarDesperfecto(suscripcionDTO.getNotificarDesperfecto());
+
+        suscripcion = suscripcionRepository.save(suscripcion);
+
+        // Convertir de vuelta a DTO
+        return convertirADTO(suscripcion);
+    }
+
+    private SuscripcionDTO convertirADTO(Suscripcion suscripcion) {
+        SuscripcionDTO dto = new SuscripcionDTO();
+        dto.setHeladeraId(suscripcion.getHeladeraId());
+        dto.setColaboradorId(suscripcion.getColaboradorId());
+        dto.setUmbralViandasMinimas(suscripcion.getUmbralViandasMinimas());
+        dto.setUmbralViandasMaximas(suscripcion.getUmbralViandasMaximas());
+        dto.setNotificarDesperfecto(suscripcion.getNotificarDesperfecto());
+        return dto;
     }
 }

@@ -5,6 +5,7 @@ import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
+import ar.edu.utn.dds.k3003.dtos.SuscripcionDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -64,5 +65,15 @@ public class HeladeraController {
         }
     }
 
-
+    public void suscribir(Context context) {
+        var suscripcionDTO = context.bodyAsClass(SuscripcionDTO.class);
+        try {
+            var suscripcionRta = this.fachada.suscribir(suscripcionDTO);
+            context.json(suscripcionRta);
+            context.status(HttpStatus.CREATED);
+        } catch (NoSuchElementException ex) {
+            context.result(ex.getLocalizedMessage());
+            context.status(HttpStatus.NOT_FOUND);
+        }
+    }
 }

@@ -35,6 +35,12 @@ public class Heladera {
     private LocalDateTime fechaCreacion;
     @Column(nullable = true)
     private Boolean activa;
+    @Column(nullable = false)
+    private Boolean sensorMovimientoActivado;
+    @Column(nullable = false)
+    private LocalDateTime ultimaConexion;
+    @Column(nullable = true)
+    private Boolean abierta;
 
     public Heladera() {}
 
