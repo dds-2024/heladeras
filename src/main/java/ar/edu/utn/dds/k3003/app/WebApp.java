@@ -17,6 +17,7 @@ import java.util.TimeZone;
 import java.text.SimpleDateFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ar.edu.utn.dds.k3003.clients.ColaboradoresProxy;
 import ar.edu.utn.dds.k3003.clients.ViandasProxy;
 import ar.edu.utn.dds.k3003.controllers.*;
 import ar.edu.utn.dds.k3003.facades.dtos.Constants;
@@ -29,6 +30,7 @@ public class WebApp {
         var objectMapper = createObjectMapper();
         var fachada = new Fachada();
         fachada.setViandasProxy(new ViandasProxy(objectMapper));
+        fachada.setColaboradoresProxy(new ColaboradoresProxy(objectMapper));
         
 
         var port = Integer.parseInt(env.getOrDefault("PORT", "8080"));
@@ -77,6 +79,12 @@ public class WebApp {
         app.get("/heladeras/{id}/temperaturas", heladerasController::obtenerTemperaturas);
         app.get("/heladeras/{id}/viandas", heladerasController::obtenerCantidadViandas);
         app.delete("/cleanup", cleanupController::cleanup);
+        app.post("/heladeras/{id}/suscripciones", heladerasController::suscribir);
+        app.post("/heladeras/reportar-desperfecto", heladerasController::reportarIncidente);
+        app.get("/heladeras/{id}/incidentes", heladerasController::obtenerIncidentes);
+        app.post("/heladeras/{id}/tiempoSinReportar", heladerasController::verificarTiempoSinReportar);
+        app.post("/heladeras/{id}/fraude", heladerasController::reportarFraude);
+
 
         // Endpoint para métricas
         app.get("/metrics", ctx -> {

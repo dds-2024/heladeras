@@ -16,7 +16,9 @@ public class Suscripcion {
     
     private Integer colaboradorId;
     private Integer heladeraId;
-    private Integer umbralViandasMinimas;
-    private Integer umbralViandasMaximas;
-    private Boolean notificarDesperfecto;
+    
+    @Enumerated(EnumType.STRING)
+    private TipoSuscripcion tipoSuscripcion;
+    
+    private Integer cantidadViandas; // umbral de viandas según el tipo de suscripción
 }

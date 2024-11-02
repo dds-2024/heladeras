@@ -2,6 +2,8 @@ package ar.edu.utn.dds.k3003.repositories;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -63,5 +65,44 @@ public class TemperaturaRepository {
         em.createNativeQuery("ALTER SEQUENCE heladeras_id_seq RESTART WITH 1").executeUpdate();
         em.getTransaction().commit();
         em.close();
+    }
+
+    public Collection<Temperatura> findByHeladeraIdAndLastHour(Integer heladeraId, LocalDateTime referenceTime) {
+        LocalDateTime unaHoraAntes = referenceTime.minusHours(1);
+        
+        EntityManager em = _emf.createEntityManager();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Temperatura> cq = cb.createQuery(Temperatura.class);
+        Root<Temperatura> temperatura = cq.from(Temperatura.class);
+        
+        cq.select(temperatura)
+          .where(cb.and(
+              cb.equal(temperatura.get("heladeraId"), heladeraId),
+              cb.between(temperatura.get("fecha"), unaHoraAntes, referenceTime)
+          ));
+          
+        Collection<Temperatura> temperaturas = em.createQuery(cq).getResultList();
+        em.close();
+        return temperaturas;
+    }
+
+    public boolean existeMedicionDesde(Integer heladeraId, LocalDateTime desde) {
+        EntityManager em = _emf.createEntityManager();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Temperatura> temperatura = cq.from(Temperatura.class);
+        
+        cq.select(cb.count(temperatura))
+          .where(
+              cb.and(
+                  cb.equal(temperatura.get("heladeraId"), heladeraId),
+                  cb.greaterThanOrEqualTo(temperatura.get("fecha"), desde)
+              )
+          );
+        
+        Long count = em.createQuery(cq).getSingleResult();
+        em.close();
+        
+        return count > 0;
     }
 }

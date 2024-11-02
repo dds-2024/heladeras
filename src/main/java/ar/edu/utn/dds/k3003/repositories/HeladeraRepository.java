@@ -27,6 +27,15 @@ public class HeladeraRepository {
         return heladera;
     }
 
+    public Heladera update(Heladera heladera) {
+        EntityManager em = _emf.createEntityManager();
+        em.getTransaction().begin();
+        heladera = em.merge(heladera);
+        em.getTransaction().commit();
+        em.close();
+        return heladera;
+    }
+
     public Heladera findById(Integer id) {
         EntityManager em = _emf.createEntityManager();
         Optional<Heladera> heladera = Optional.ofNullable(em.find(Heladera.class, id));
