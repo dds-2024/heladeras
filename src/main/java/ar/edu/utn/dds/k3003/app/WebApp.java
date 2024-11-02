@@ -79,11 +79,12 @@ public class WebApp {
         app.get("/heladeras/{id}/temperaturas", heladerasController::obtenerTemperaturas);
         app.get("/heladeras/{id}/viandas", heladerasController::obtenerCantidadViandas);
         app.delete("/cleanup", cleanupController::cleanup);
-        app.post("/heladeras/{id}/suscripciones", heladerasController::suscribir);
+        app.post("/heladeras/suscripciones", heladerasController::suscribir);
         app.post("/heladeras/reportar-desperfecto", heladerasController::reportarIncidente);
         app.get("/heladeras/{id}/incidentes", heladerasController::obtenerIncidentes);
         app.post("/heladeras/{id}/tiempoSinReportar", heladerasController::verificarTiempoSinReportar);
         app.post("/heladeras/{id}/fraude", heladerasController::reportarFraude);
+        app.put("/heladeras/{id}/capacidad", heladerasController::setCapacidad);
 
 
         // Endpoint para métricas

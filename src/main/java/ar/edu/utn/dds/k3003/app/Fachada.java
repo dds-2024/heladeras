@@ -249,6 +249,8 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
         incidente.setHeladeraId(incidenteDTO.getHeladeraId());
         incidente.setTipo(incidenteDTO.getTipo());
         incidente.setDescripcion(incidenteDTO.getDescripcion());
+        incidente.setFecha(LocalDateTime.now());
+        incidente.setEstado(incidenteDTO.getEstado());
         incidenteRepository.save(incidente);
 
         // Marcar la heladera como inactiva
@@ -260,7 +262,6 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
         dto.setHeladeraId(incidente.getHeladeraId());
         dto.setTipo(incidente.getTipo());
         dto.setDescripcion(incidente.getDescripcion());
-        dto.setFecha(incidente.getFecha());
         return dto;
     }
 
@@ -304,5 +305,24 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
         
         // Marcar heladera como inactiva
         marcarDesperfecto(heladeraId);
+    }
+
+    public void setCapacidad(Integer heladeraId, Integer capacidad) {
+        // Verificar que existe la heladera
+        Heladera heladera = heladeraRepository.findById(heladeraId);
+        
+        // Validar que la capacidad sea positiva
+        if (capacidad <= 0) {
+            throw new IllegalArgumentException("La capacidad debe ser mayor a 0");
+        }
+        
+        // Validar que la capacidad no sea menor a la ocupación actual
+        if (heladera.getOcupacion() != null && capacidad < heladera.getOcupacion()) {
+            throw new IllegalArgumentException("La capacidad no puede ser menor a la ocupación actual (" + heladera.getOcupacion() + ")");
+        }
+        
+        // Actualizar capacidad
+        heladera.setCapacidad(capacidad);
+        heladeraRepository.update(heladera);
     }
 }

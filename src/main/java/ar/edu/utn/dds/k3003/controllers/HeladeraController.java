@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
+import ar.edu.utn.dds.k3003.dtos.CapacidadDTO;
 import ar.edu.utn.dds.k3003.dtos.IncidenteDTO;
 import ar.edu.utn.dds.k3003.dtos.SuscripcionDTO;
 import ar.edu.utn.dds.k3003.dtos.TiempoDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
-import ar.edu.utn.dds.k3003.model.Incidente;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
@@ -125,6 +125,22 @@ public class HeladeraController {
         } catch (NoSuchElementException ex) {
             context.result(ex.getLocalizedMessage());
             context.status(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public void setCapacidad(Context context) {
+        var heladeraId = context.pathParamAsClass("id", Integer.class).get();
+        var capacidadDTO = context.bodyAsClass(CapacidadDTO.class);
+        
+        try {
+            this.fachada.setCapacidad(heladeraId, capacidadDTO.getCapacidad());
+            context.status(HttpStatus.OK);
+        } catch (NoSuchElementException ex) {
+            context.result(ex.getLocalizedMessage());
+            context.status(HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException ex) {
+            context.result(ex.getMessage());
+            context.status(HttpStatus.BAD_REQUEST);
         }
     }
 }

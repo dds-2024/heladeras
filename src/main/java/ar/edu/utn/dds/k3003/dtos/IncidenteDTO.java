@@ -12,7 +12,6 @@ import ar.edu.utn.dds.k3003.model.TipoIncidente;
 public class IncidenteDTO {
     private Integer heladeraId;
     private TipoIncidente tipo;
-    private LocalDateTime fecha;
     private String descripcion;
     private EstadoIncidente estado;
 }
