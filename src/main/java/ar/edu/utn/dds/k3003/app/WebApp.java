@@ -85,6 +85,7 @@ public class WebApp {
         app.post("/heladeras/{id}/tiempoSinReportar", heladerasController::verificarTiempoSinReportar);
         app.post("/heladeras/{id}/fraude", heladerasController::reportarFraude);
         app.put("/heladeras/{id}/capacidad", heladerasController::setCapacidad);
+        app.put("/heladeras/{id}/reparar", heladerasController::setActiva);
 
 
         // Endpoint para métricas

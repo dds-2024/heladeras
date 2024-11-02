@@ -143,4 +143,19 @@ public class HeladeraController {
             context.status(HttpStatus.BAD_REQUEST);
         }
     }
+
+    public void setActiva(Context context) {
+        var heladeraId = context.pathParamAsClass("id", Integer.class).get();
+        
+        try {
+            this.fachada.reactivarHeladera(heladeraId);
+            context.status(HttpStatus.OK);
+        } catch (NoSuchElementException ex) {
+            context.result(ex.getLocalizedMessage());
+            context.status(HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException ex) {
+            context.result(ex.getMessage());
+            context.status(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
