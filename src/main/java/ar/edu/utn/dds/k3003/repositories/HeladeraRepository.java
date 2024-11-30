@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.repositories;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -43,6 +44,15 @@ public class HeladeraRepository {
         return heladera.orElseThrow(() -> new NoSuchElementException(
             String.format("No hay una heladera de id: %s", id)
         ));
+    }
+
+    public List<Heladera> getAll() {
+        EntityManager em = _emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT h FROM Heladera h", Heladera.class).getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     public void agregarVianda(Heladera heladera)

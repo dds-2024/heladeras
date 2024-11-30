@@ -171,6 +171,16 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
         return heladeraMapper.map(heladera);
     }
 
+    public List<HeladeraDTO> buscarTodasLasHeladeras() {
+        // Obtener todas las heladeras del repositorio
+        List<Heladera> heladeras = heladeraRepository.getAll();
+
+        // Mapear las entidades Heladera a DTOs
+        return heladeras.stream()
+                .map(heladeraMapper::map)
+                .collect(Collectors.toList());
+    }
+
     public Heladera buscarHeladeraCompletaXId(Integer heladeraId) throws NoSuchElementException{
         //Busco la heladera por id en mi heladeraRepository
         Heladera heladera = heladeraRepository.findById(heladeraId);

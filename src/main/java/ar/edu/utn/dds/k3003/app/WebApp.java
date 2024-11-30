@@ -72,6 +72,7 @@ public class WebApp {
         
         // Definir rutas
         app.post("/heladeras", heladerasController::agregar);
+        app.get("/heladeras", heladerasController::obtenerTodas);
         app.get("/heladeras/{id}", heladerasController::obtener);
         app.post("/depositos", depositosController::depositar);
         app.post("/retiros", retirosController::retirar);

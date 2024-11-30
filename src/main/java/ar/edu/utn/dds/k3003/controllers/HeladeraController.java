@@ -39,6 +39,20 @@ public class HeladeraController {
         }
     }
 
+    public void obtenerTodas(Context context) {
+        try {
+            // Obtener todas las heladeras a través de la fachada
+            var heladeras = this.fachada.buscarTodasLasHeladeras();
+
+            // Enviar la lista como respuesta en formato JSON
+            context.json(heladeras);
+        } catch (Exception ex) {
+            // Manejo de errores generales
+            context.result("Error al obtener las heladeras: " + ex.getLocalizedMessage());
+            context.status(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public void obtenerTemperaturas(Context context) {
         var id = context.pathParamAsClass("id", Integer.class).get();
 
