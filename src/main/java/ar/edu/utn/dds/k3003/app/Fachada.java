@@ -171,6 +171,12 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
         return heladeraMapper.map(heladera);
     }
 
+    public Heladera buscarHeladeraCompletaXId(Integer heladeraId) throws NoSuchElementException{
+        //Busco la heladera por id en mi heladeraRepository
+        Heladera heladera = heladeraRepository.findById(heladeraId);
+        return heladera;
+    }
+
     public SuscripcionDTO suscribir(SuscripcionDTO suscripcionDTO) {
         // Verificar que la heladera existe
         Heladera heladera = heladeraRepository.findById(suscripcionDTO.getHeladeraId());
@@ -207,6 +213,7 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
         suscripcion.setColaboradorId(suscripcionDTO.getColaboradorId());
         suscripcion.setTipoSuscripcion(suscripcionDTO.getTipoSuscripcion());
         suscripcion.setCantidadViandas(suscripcionDTO.getCantidadViandas());
+        suscripcion.setEnviada(false);
 
         suscripcion = suscripcionRepository.save(suscripcion);
 
@@ -219,6 +226,7 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
         dto.setColaboradorId(suscripcion.getColaboradorId());
         dto.setTipoSuscripcion(suscripcion.getTipoSuscripcion());
         dto.setCantidadViandas(suscripcion.getCantidadViandas());
+        dto.setEnviada(suscripcion.isEnviada());
         return dto;
     }
 

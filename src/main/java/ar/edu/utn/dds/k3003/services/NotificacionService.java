@@ -23,19 +23,19 @@ public class NotificacionService {
         for (Suscripcion suscripcion : suscripciones) {
             switch (suscripcion.getTipoSuscripcion()) {
                 case VIANDAS_MINIMAS:
-                    if (heladera.getOcupacion() <= suscripcion.getCantidadViandas()) {
+                    if (heladera.getOcupacion() <= suscripcion.getCantidadViandas() && !suscripcion.isEnviada()) {
                         notificar(suscripcion);
                     }
                     break;
                     
                 case VIANDAS_MAXIMAS:
-                    if (heladera.getCapacidad() - heladera.getOcupacion() <= suscripcion.getCantidadViandas()) {
+                    if (heladera.getCapacidad() - heladera.getOcupacion() <= suscripcion.getCantidadViandas() && !suscripcion.isEnviada()) {
                         notificar(suscripcion);
                     }
                     break;
                     
                 case DESPERFECTO:
-                    if (!heladera.getActiva()) {
+                    if (!heladera.getActiva() && !suscripcion.isEnviada()) {
                         notificar(suscripcion);
                     }
                     break;

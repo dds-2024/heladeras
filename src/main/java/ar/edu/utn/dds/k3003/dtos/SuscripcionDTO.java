@@ -11,4 +11,5 @@ public class SuscripcionDTO {
     private Integer heladeraId;
     private TipoSuscripcion tipoSuscripcion;
     private Integer cantidadViandas;
+    private boolean enviada;
 }

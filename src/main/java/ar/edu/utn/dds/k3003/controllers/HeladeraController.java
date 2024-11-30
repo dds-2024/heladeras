@@ -30,8 +30,9 @@ public class HeladeraController {
         var id = context.pathParamAsClass("id", Integer.class).get();
 
         try {
-            var heladeraDTO = this.fachada.buscarHeladeraXId(id);
-            context.json(heladeraDTO);
+            //var heladeraDTO = this.fachada.buscarHeladeraXId(id);
+            var heladera = this.fachada.buscarHeladeraCompletaXId(id);
+            context.json(heladera);
         } catch (NoSuchElementException ex) {
             context.result(ex.getLocalizedMessage());
             context.status(HttpStatus.NOT_FOUND);
