@@ -270,6 +270,7 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
         dto.setHeladeraId(incidente.getHeladeraId());
         dto.setTipo(incidente.getTipo());
         dto.setDescripcion(incidente.getDescripcion());
+        dto.setEstado(incidente.getEstado());
         return dto;
     }
 
