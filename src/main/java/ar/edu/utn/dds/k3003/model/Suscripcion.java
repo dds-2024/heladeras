@@ -21,5 +21,6 @@ public class Suscripcion {
     private TipoSuscripcion tipoSuscripcion;
     
     private Integer cantidadViandas; // umbral de viandas según el tipo de suscripción
+    @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean enviada = false;
 }
