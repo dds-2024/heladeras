@@ -10,6 +10,7 @@ import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaDelete;
 
 public class IncidenteRepository {
      private EntityManagerFactory _emf;
@@ -37,5 +38,18 @@ public class IncidenteRepository {
         List<Incidente> incidentes = em.createQuery(cq).getResultList();
         em.close();
         return incidentes;
+    }
+
+    public void deleteAll() {
+        EntityManager em = _emf.createEntityManager();
+        em.getTransaction().begin();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaDelete<Incidente> delete = cb.createCriteriaDelete(Incidente.class);
+        delete.from(Incidente.class);
+        em.createQuery(delete).executeUpdate();
+        // Reiniciar los IDs
+        em.createNativeQuery("ALTER SEQUENCE incidentes_id_seq RESTART WITH 1").executeUpdate();
+        em.getTransaction().commit();
+        em.close();
     }
 } 

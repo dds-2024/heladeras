@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -49,5 +50,18 @@ public class SuscripcionRepository {
         List<Suscripcion> suscripciones = em.createQuery(cq).getResultList();
         em.close();
         return suscripciones;
+    }
+
+    public void deleteAll() {
+        EntityManager em = _emf.createEntityManager();
+        em.getTransaction().begin();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaDelete<Suscripcion> delete = cb.createCriteriaDelete(Suscripcion.class);
+        delete.from(Suscripcion.class);
+        em.createQuery(delete).executeUpdate();
+        // Reiniciar los IDs
+        em.createNativeQuery("ALTER SEQUENCE suscripciones_id_seq RESTART WITH 1").executeUpdate();
+        em.getTransaction().commit();
+        em.close();
     }
 }
