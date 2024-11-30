@@ -52,4 +52,16 @@ public class IncidenteRepository {
         em.getTransaction().commit();
         em.close();
     }
+
+    public void deleteByHeladeraId(Integer heladeraId) {
+        EntityManager em = _emf.createEntityManager();
+        em.getTransaction().begin();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaDelete<Incidente> delete = cb.createCriteriaDelete(Incidente.class);
+        Root<Incidente> root = delete.from(Incidente.class);
+        delete.where(cb.equal(root.get("heladeraId"), heladeraId));
+        em.createQuery(delete).executeUpdate();
+        em.getTransaction().commit();
+        em.close();
+    }
 } 

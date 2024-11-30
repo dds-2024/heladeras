@@ -336,16 +336,9 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras{
     }
 
     public void reactivarHeladera(Integer heladeraId) {
-        // Buscar la heladera
-        Heladera heladera = heladeraRepository.findById(heladeraId);
-        
-        // Marcar como activa
+        var heladera = heladeraRepository.findById(heladeraId);
         heladera.setActiva(true);
-        
-        // Guardar cambios
         heladeraRepository.update(heladera);
-        
-        // Verificar notificaciones para avisar a los suscriptores
-        this.notificacionService.verificarNotificaciones(heladera);
+        incidenteRepository.deleteByHeladeraId(heladeraId);
     }
 }
