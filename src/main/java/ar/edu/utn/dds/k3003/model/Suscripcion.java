@@ -21,5 +21,5 @@ public class Suscripcion {
     private TipoSuscripcion tipoSuscripcion;
     
     private Integer cantidadViandas; // umbral de viandas según el tipo de suscripción
-    private boolean enviada;
+    private boolean enviada = false;
 }
